@@ -1,3 +1,18 @@
+/* Copyright 2015 OSVR and contributors
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. */
+
+
 !include "FileFunc.nsh"
 !include "x64.nsh"
 !include "WinVer.nsh"
@@ -26,7 +41,7 @@
 ; Version number needs to be changed when we install a new distribution. It is appended to the installer name just to allow for easy identification
 !define REVISION                    XXXXX
 !define VERSION                     2.5
-!define CCVERSION					"2.5.0.0"
+!define /file CCVERSION				"..\Distro\osvr-ver.txt"
 ; required diskspace in KB
 !define PAYLOAD_SIZE                "20000"
 
@@ -224,7 +239,7 @@ functionend
 
   ;Name and file
   Name "OSVR ${PRODUCT_FRIENDLY_NAME} Installer"
-  OutFile "${PRODUCT_NAME}_v${VERSION}.exe"
+  OutFile "${PRODUCT_NAME}_install.exe"
 
   ; Admin priviledge is required
   RequestExecutionLevel admin
@@ -259,10 +274,27 @@ Section "VersionCheck" SEC001
   ${TimeStamp} $0
   LogEx::Write true true "$0:Version Check"
 
+  ReadRegStr $0 HKLM "SOFTWARE\OSVR" "InstalledVersion"
+  ${if} ${Errors}
+      ;MessageBox MB_OK "Value not found"
+	  Goto InstallThis
+  ${else}
+      
+	  ${if} ${CCVERSION} S> $0
+		 ;MessageBox MB_OK "Attempting to install version ${CCVERSION} over $0"
+         ${TimeStamp} $0
+         LogEx::Write true true "$0:Replacing $0 with ${CCVERSION}"
+		 Goto InstallThis
+	  ${else}
+		;MessageBox MB_OK "Attempting to install version ${CCVERSION} over $0, which is not newer than already installed. Quitting installer."
+         ${TimeStamp} $0
+        LogEx::Write true true "$0:Version Check: $0 is newer than ${CCVERSION}}"
+		Quit
+	  ${endif}
+  ${endif}
 
-  ${GetFileVersion} "${APP_INSTALL_DIR}\bin\osvr_server.exe" $R0
-  
-  
+/*   ${GetFileVersion} "${APP_INSTALL_DIR}\bin\osvr_server.exe" $R0
+    
   ${VersionCompare} $R0 ${CCVERSION} $R1
   ${if}  "$R1" == "2" 
        LogEx::Write true true "$0:Replacing $R0 with ${CCVERSION}"
@@ -272,9 +304,10 @@ Section "VersionCheck" SEC001
     LogEx::Write true true "$0:Version Check: $R0 is newer than ${CCVERSION}}"
     MessageBox MB_OK "Attempting to install version ${CCVERSION}, which is not newer than already installed $R0. Quitting installer."
     Quit
-  ${EndIf}
+  ${EndIf} */
+  
   InstallThis:
- 
+  
   ; should check for free space here
   ${TimeStamp} $0
   LogEx::Write true true "$0:Free space check"
@@ -352,18 +385,30 @@ Section "EndInstall" SEC04
   LogEx::Write true true "$0:Setting up Run registry"
 
   WriteRegStr HKLM "Software\OSVR" "InstallationDirectory"             "${APP_INSTALL_DIR}\"
+  WriteRegStr HKLM "Software\OSVR" "InstalledVersion"             "${CCVERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}" '"${APP_INSTALL_DIR}\bin\osvr_server.exe" "${APP_INSTALL_DIR}\bin\osvr_server_config.json"'
  
-   ; Write the uninstall keys for Windows
+  ; set up environment variables
+  ; include for some of the windows messages defines
+  !include "winmessages.nsh"
+  ; HKLM (all users) vs HKCU (current user) defines
+  !define env_hklm 'HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"'
+  !define env_hkcu 'HKCU "Environment"'
+  ; set variable
+  WriteRegExpandStr ${env_hklm} "OSVR_INSTALL_DIR" "${APP_INSTALL_DIR}\"
+  ; make sure windows knows about the change
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+
+  ; Write the uninstall keys for Windows
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "DisplayName" "osvr_server"
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "DisplayVersion" "${VERSION}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "DisplayVersion" "${CCVERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "UninstallString" "$\"${APP_INSTALL_DIR}\uninstall.exe$\""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "QuietUninstallString" "$\"${APP_INSTALL_DIR}\uninstall.exe$\" /S"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "DisplayIcon" "$\"${APP_INSTALL_DIR}\osvr_server.ico$\""
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "NoRepair" 1
  
-  ; Execute the Razer Merger if it exist, otherwise skip
+  ; Execute the server if it exist, otherwise skip
   IfFileExists "${APP_INSTALL_DIR}\bin\osvr_server.exe" 0 +2
   Exec '"${APP_INSTALL_DIR}\bin\osvr_server.exe"'
   
@@ -400,6 +445,12 @@ Section "Uninstall"
 
 	;MessageBox MB_OK "nsProcess::Unload$\n$\n"
 	${nsProcess::Unload}
+
+   ; Clean up environment variable	
+   ; delete variable
+   DeleteRegValue ${env_hklm} "OSVR_INSTALL_DIR"
+   ; make sure windows knows about the change
+   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 
   ${TimeStamp} $0
   LogEx::Write true true "$0:Cleaning up registry"
