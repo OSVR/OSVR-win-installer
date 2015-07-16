@@ -13,12 +13,15 @@ Installer script built with NSIS.
 
 ## Requirements for running the script:##
 -	Name of the script is: setup.nsi
--	Desired distribution must go in a directory called “distro” in a directory parallel to the script directory
+-	Desired distribution directory can be specified at compile time by defining *distroDirectory*
+-	If *distroDirectory* is not passed in at compile time, the value is defaulted to ../Distro
 -	Uses registry value to determine if installed version is newer or older than version contained in the installer
 - The following items must be in the script directory
 	- splash.bmp
 	- osvr_server.ico
 	- license.txt (Apache 2.0 license)
+- A batchfile is provided for Continuous Integration convenience. It takes as its only argument the path that you would like to pass on to define as the distroDirectory
+	- the batch file must be modified on the CI target such that the path to makensis.exe is properly set
 
 ## Installer capabilities: ##
 - checks for free drive space before installing
@@ -39,4 +42,3 @@ Installer script built with NSIS.
 
 ## Improvements: ##
 - osvr_server.exe needs to be converted into a service
-- buildInstaller.bat and script should be modified to take runtime variable to point to the to-be-installed distribution directory rather than relying on a fixed location
