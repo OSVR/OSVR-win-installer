@@ -25,8 +25,8 @@ limitations under the License. */
 ;The LogicLib provides some very simple macros that allow easy construction of complex logical structures, see LogicLib.nsh
 !include "LogicLib.nsh"
   
-!define PRODUCT_NAME                "OSVR_Server"
-!define PRODUCT_FRIENDLY_NAME       "OSVR_Services"
+!define PRODUCT_NAME                "OSVR Services"
+!define PRODUCT_FRIENDLY_NAME       "OSVR Services"
 !define APP_EXE 					"osvr_server.exe"
 !define APP_INSTALL_DIR       	    "$PROGRAMFILES\OSVR"
 !define LOCAL_DATA_PATH             "${APP_INSTALL_DIR}\Data\"
@@ -56,15 +56,12 @@ UninstallIcon "osvr_server.ico"
 
 ; Splash screen. This may go away at some point.
 Function .onInit
-  SetOutPath $TEMP
-  File /oname=spltmp.bmp "splash.bmp"
-
-  advsplash::show 1000 600 400 -1 $TEMP\spltmp
-
-  Pop $0 ; $0 has '1' if the user closed the splash screen early,
-         ; '0' if everything closed normally, and '-1' if some error occurred.
-
-  Delete $TEMP\spltmp.bmp
+   IfSilent +6
+     SetOutPath $TEMP
+     File /oname=spltmp.bmp "splash.bmp"
+     advsplash::show 1000 600 400 -1 $TEMP\spltmp
+     Pop $0 ; $0 has '1' if the user closed the splash screen early, '0' if everything closed normally, and '-1' if some error occurred.
+     Delete $TEMP\spltmp.bmp
 FunctionEnd
 
 ### TimeStamp
@@ -158,8 +155,8 @@ functionend
 ;General
 
   ;Name and file
-  Name "OSVR ${PRODUCT_FRIENDLY_NAME} Installer"
-  OutFile "${PRODUCT_NAME}_install.exe"
+  Name "${PRODUCT_FRIENDLY_NAME}"
+  OutFile "${PRODUCT_NAME} Setup.exe"
 
   ; Admin priviledge is required
   RequestExecutionLevel admin
@@ -175,7 +172,7 @@ functionend
 
 ; Pages
 PageEx license
-	LicenseText "Readme"
+	LicenseText "Apache License"
 	LicenseData License.txt
 PageExEnd
 Page instfiles
@@ -320,7 +317,7 @@ Section "EndInstall" SEC04
   SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "DisplayName" "osvr_server"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "DisplayName" "OSVR services"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "DisplayVersion" "${CCVERSION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "UninstallString" "$\"${APP_INSTALL_DIR}\uninstall.exe$\""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "QuietUninstallString" "$\"${APP_INSTALL_DIR}\uninstall.exe$\" /S"
