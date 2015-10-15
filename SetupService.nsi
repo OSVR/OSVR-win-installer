@@ -234,7 +234,7 @@ Section "InitialCleanup" SEC01
 
 	nsExec::ExecToStack /timeout=5000 '${APP_INSTALL_DIR}\bin\${SERVICE_FILE_NAME} -stop'
 	
-/* 	${nsProcess::FindProcess} "${APP_EXE}" $R0
+ 	${nsProcess::FindProcess} "${APP_EXE}" $R0
     ;MessageBox MB_OK "nsProcess::FindProcess$\n$\n Errorlevel: [$R0]"
 
 	${If} $R0 == 0
@@ -244,16 +244,15 @@ Section "InitialCleanup" SEC01
 		DetailPrint "Waiting for ${APP_EXE} to close"
 		Sleep 2000  
 	${Else}
-		DetailPrint "${APP_EXE} was not found to be running"        
+		DetailPrint "${APP_EXE} was not found to be running proceeding with install."        
 	${EndIf}    
 
     ;MessageBox MB_OK "nsProcess::Unload$\n$\n"
-	${nsProcess::Unload} */
+	${nsProcess::Unload}
 	
 SectionEnd
 
 Section "MainInstall" SEC02
-
   ${TimeStamp} $0
   LogEx::Write true true "$0:Main Install"
 
@@ -264,11 +263,13 @@ Section "MainInstall" SEC02
   
   File /r /x . "${distroDirectory}\*.*"
   File osvr_server.ico
+  File osvr_user_settings.json
  
   SetShellVarContext all
   CreateDirectory "$APPDATA\OSVR"
   AccessControl::GrantOnFile "$APPDATA\OSVR" "(S-1-5-32-545)" "FullAccess"
   CopyFiles "${APP_INSTALL_DIR}\bin\osvr_server_config.json" "$APPDATA\OSVR\osvr_server_config.json"
+  CopyFiles "osvr_user_settings.json" "$APPDATA\OSVR\osvr_user_settings.json"
 SectionEnd
 
 Section "EndInstall" SEC04
@@ -354,7 +355,7 @@ Section "Uninstall"
   LogEx::Write true true "$0:Uninstalling service"
   nsExec::ExecToStack /timeout=5000 '${APP_INSTALL_DIR}\bin\${SERVICE_FILE_NAME} -uninstall'
   
-/*     ; Kill process first before uninstalling
+    ; Kill process first before uninstalling
 	${nsProcess::FindProcess} "${APP_EXE}" $R0
 	;MessageBox MB_OK "nsProcess::FindProcess$\n$\n Errorlevel: [$R0]"
 
@@ -365,12 +366,12 @@ Section "Uninstall"
 		DetailPrint "Waiting for ${APP_EXE} to close"
 		Sleep 2000  
 	${Else}
-		DetailPrint "${APP_EXE} was not found to be running"        
+		DetailPrint "${APP_EXE} was not found to be running proceeding with uninstall."        
 	${EndIf}    
 
 	;MessageBox MB_OK "nsProcess::Unload$\n$\n"
 	${nsProcess::Unload}
- */
+ 
  
  
    ; Clean up environment variable	
@@ -397,6 +398,22 @@ Section "Uninstall"
   ; Delete the uninstaller folder
   RMDIR /r ${UNINSTALL_DIR}
 
+  ; initialize the driver’s path
+  Var /GLOBAL UNINSTDIR
+  StrCpy $UNINSTDIR '$APPDATA\Razer\Synapse\ProductUpdates\Uninstallers\Razer_OSVR_Driver'
+ 
+  ; run the driver’s uninstaller in silent mode
+  nsExec::Exec '"$UNINSTDIR\RazerOSVRUninstaller.exe" /S'
+ 
+  ; check if Synapse list exists
+  IfFileExists '$APPDATA\Razer\Synapse\ProductUpdates\UpdaterWorkList.current.xml' remove_from_worklist ignore_worklist
+
+  remove_from_worklist:
+  ; remove service and driver component’s entry in Synapse list
+  nsExec::Exec '$APPDATA\Razer\Synapse\ProductUpdates\Uninstallers\Razer OSVR Driver\wlEdit\wlEdit.exe -pEmily -n"Razer OSVR Service" -d'
+
+  ignore_worklist: 
+  
   ${TimeStamp} $0
   LogEx::Write true true "$0:Finished uninstall"
   LogEx::Close
