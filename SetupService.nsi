@@ -30,19 +30,22 @@ limitations under the License. */
 !define APP_EXE 					"osvr_server.exe"
 !define SERVICE_FILE_NAME 			"osvr_services.exe"
 !define APP_INSTALL_DIR       	    "$PROGRAMFILES\OSVR"
-!define LOCAL_DATA_PATH             "${APP_INSTALL_DIR}\Data\"
 !define UNINSTALL_DIR               "${APP_INSTALL_DIR}"
-!define SRVC_SETUP_DIR		        "${APP_INSTALL_DIR}\ServiceSetup"
 
 !define LOCAL_UNINSTALLER_NAME 		"Uninstall.exe"
 !define LOCAL_UNINSTALLER_DIR 		"${APP_INSTALL_DIR}"
 
-!define OSVRINSTALLLOG  " \..\ProgramData\OSVR\Logs\OSVRInstall.log"
-!define OSVR_PROGRAM_DATA_DIR  " \..\ProgramData\OSVR\"
-
 ; Version number needs to be changed when we install a new distribution. It is appended to the installer name just to allow for easy identification
 !define REVISION                    XXXXX
 !define VERSION                     2.5
+
+; Installer Version information
+  VIProductVersion "0.6.105.4"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OSVR Services Setup"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "OSVR"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright OSVR"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Services and core binary installer"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "v0.6-105-g616d9bb.3"
 
 !ifndef distroDirectory
 	!define distroDirectory "..\Distro"
@@ -61,9 +64,9 @@ Function .onInit
    IfSilent +6
      SetOutPath $TEMP
      File /oname=spltmp.bmp "splash.bmp"
-     advsplash::show 1000 600 400 -1 $TEMP\spltmp
+     advsplash::show 1000 600 400 -1 $TEMP/spltmp
      Pop $0 ; $0 has '1' if the user closed the splash screen early, '0' if everything closed normally, and '-1' if some error occurred.
-     Delete $TEMP\spltmp.bmp
+     Delete $TEMP/spltmp.bmp
 FunctionEnd
 
 ### TimeStamp
@@ -348,6 +351,7 @@ Section "Uninstall"
   ${TimeStamp} $0
   LogEx::Write true true "$0:Uninstall start"
 
+  ; Uninstall the service
  ${TimeStamp} $0
   LogEx::Write true true "$0:Stopping service"
   nsExec::ExecToStack /timeout=5000 '${APP_INSTALL_DIR}\bin\${SERVICE_FILE_NAME} -stop'
@@ -355,7 +359,7 @@ Section "Uninstall"
   LogEx::Write true true "$0:Uninstalling service"
   nsExec::ExecToStack /timeout=5000 '${APP_INSTALL_DIR}\bin\${SERVICE_FILE_NAME} -uninstall'
   
-    ; Kill process first before uninstalling
+    ; Kill process first before uninstalling if one is running
 	${nsProcess::FindProcess} "${APP_EXE}" $R0
 	;MessageBox MB_OK "nsProcess::FindProcess$\n$\n Errorlevel: [$R0]"
 
@@ -371,9 +375,7 @@ Section "Uninstall"
 
 	;MessageBox MB_OK "nsProcess::Unload$\n$\n"
 	${nsProcess::Unload}
- 
- 
- 
+   
    ; Clean up environment variable	
    ; delete variable
    DeleteRegValue ${env_hklm} "OSVR_INSTALL_DIR"
@@ -389,11 +391,12 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\OSVR\osvr_server.lnk"
   Delete "$SMPROGRAMS\OSVR\osvr_uninstall.lnk"
   RMDIR /r  "$SMPROGRAMS\OSVR"
-	
-  ; Delete the app folder
-  RMDIR /r ${APP_INSTALL_DIR}
   
-  RMDIR /r ${OSVR_PROGRAM_DATA_DIR}
+  ; Wait for everything to close down
+  Sleep 2000 
+  ; Delete the app folder and app data folder
+  RMDIR /r ${APP_INSTALL_DIR}
+  RMDIR /r $APPDATA\OSVR
   
   ; Delete the uninstaller folder
   RMDIR /r ${UNINSTALL_DIR}

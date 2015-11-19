@@ -31,8 +31,8 @@
       }
     },
     "anthropometric": {
-      "standingEyeHeight": 1.70,
-      "seatedEyeHeight": 1.10,
+      "standingEyeHeight": 170,
+      "seatedEyeHeight": 110,
       "eyeToNeck": 20.32
     }
   }
