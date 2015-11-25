@@ -40,7 +40,7 @@ limitations under the License. */
 !define VERSION                     2.5
 
 ; Installer Version information
-  VIProductVersion "0.6.105.4"
+  VIProductVersion "0.6.105.6"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OSVR Services Setup"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "OSVR"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright OSVR"
@@ -263,21 +263,23 @@ Section "MainInstall" SEC02
   ; Copy files 
   SetOverwrite on
   SetOutPath "${APP_INSTALL_DIR}"
-  
+   
   File /r /x . "${distroDirectory}\*.*"
   File osvr_server.ico
   File osvr_user_settings.json
  
   SetShellVarContext all
   CreateDirectory "$APPDATA\OSVR"
-  AccessControl::GrantOnFile "$APPDATA\OSVR" "(S-1-5-32-545)" "FullAccess"
   CopyFiles "${APP_INSTALL_DIR}\bin\osvr_server_config.json" "$APPDATA\OSVR\osvr_server_config.json"
   CopyFiles "osvr_user_settings.json" "$APPDATA\OSVR\osvr_user_settings.json"
+  AccessControl::GrantOnFile "$APPDATA\OSVR" "Everyone" "FullAccess"
+  
 SectionEnd
 
 Section "EndInstall" SEC04
   ;Give full access to all users in the system
-  AccessControl::GrantOnFile "${APP_INSTALL_DIR}" "(S-1-5-32-545)" "FullAccess"
+  ;AccessControl::GrantOnFile "${APP_INSTALL_DIR}" "(S-1-5-32-545)" "FullAccess"
+  AccessControl::GrantOnFile "${APP_INSTALL_DIR}" "Everyone" "FullAccess"
 
    ${TimeStamp} $0
   LogEx::Write true true "$0:Creating uninstaller"
