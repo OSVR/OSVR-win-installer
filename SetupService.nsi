@@ -32,7 +32,7 @@ limitations under the License. */
 !define APP_INSTALL_DIR       	    "$PROGRAMFILES\OSVR"
 !define UNINSTALL_DIR               "${APP_INSTALL_DIR}"
 
-!define LOCAL_UNINSTALLER_NAME 		"Uninstall.exe"
+!define LOCAL_UNINSTALLER_NAME 		"OSVRServicesUninstall.exe"
 !define LOCAL_UNINSTALLER_DIR 		"${APP_INSTALL_DIR}"
 
 ; Version number needs to be changed when we install a new distribution. It is appended to the installer name just to allow for easy identification
@@ -40,12 +40,12 @@ limitations under the License. */
 !define VERSION                     2.5
 
 ; Installer Version information
-  VIProductVersion "0.6.105.6"
+  VIProductVersion "0.6.105.7"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OSVR Services Setup"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "OSVR"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Copyright OSVR"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Services and core binary installer"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "v0.6-105-g616d9bb.3"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "v0.6-105-g616d9bb.4"
 
 !ifndef distroDirectory
 	!define distroDirectory "..\Distro"
@@ -267,6 +267,8 @@ Section "MainInstall" SEC02
   File /r /x . "${distroDirectory}\*.*"
   File osvr_server.ico
   File osvr_user_settings.json
+  ; used to facilitate Synapse uninstall
+  File rzUninstaller.xml
  
   SetShellVarContext all
   CreateDirectory "$APPDATA\OSVR"
@@ -288,6 +290,17 @@ Section "EndInstall" SEC04
   CreateDirectory "${LOCAL_UNINSTALLER_DIR}"
   WriteUninstaller "${LOCAL_UNINSTALLER_DIR}\${LOCAL_UNINSTALLER_NAME}"
 
+  ; Synapse integration for uninstall cleanup...
+  ; check if Synapse list exists
+  IfFileExists '$APPDATA\Razer\Synapse\ProductUpdates\UpdaterWorkList.current.xml' write_osvr_synapse_uninstaller skip_osvr_synapse_uninstaller
+
+  write_osvr_synapse_uninstaller:
+  CreateDirectory "$APPDATA\Razer\Synapse\ProductUpdates\Uninstallers\RazerOSVRServices"
+  WriteUninstaller "$APPDATA\Razer\Synapse\ProductUpdates\Uninstallers\RazerOSVRServices\${LOCAL_UNINSTALLER_NAME}"
+  CopyFiles "RzUninstaller.xml" "$APPDATA\Razer\Synapse\ProductUpdates\Uninstallers\RazerOSVRServices\rzUninstaller.xml"
+
+  skip_osvr_synapse_uninstaller:
+ 
   ${TimeStamp} $0
   LogEx::Write true true "$0:Setting shortcuts"
 
@@ -296,8 +309,13 @@ Section "EndInstall" SEC04
   SetOutPath "${APP_INSTALL_DIR}\bin"
   CreateDirectory "$SMPROGRAMS\OSVR"
 
-  ; CreateShortCut "$SMPROGRAMS\OSVR\osvr_server.lnk" "${APP_INSTALL_DIR}\bin\osvr_server.exe" "" "${APP_INSTALL_DIR}\osvr_server.ico"
-  CreateShortCut "$SMPROGRAMS\OSVR\osvr_uninstall.lnk" "${APP_INSTALL_DIR}\uninstall.exe" "" "${APP_INSTALL_DIR}\osvr_server.ico"
+  CreateShortCut "$SMPROGRAMS\OSVR\osvr_service_stop.lnk" "${APP_INSTALL_DIR}\bin\osvr_services.exe" "-stop" "${APP_INSTALL_DIR}\osvr_server.ico"
+  ShellLink::SetRunAsAdministrator "$SMPROGRAMS\OSVR\osvr_service_stop.lnk"
+  Pop $0
+  CreateShortCut "$SMPROGRAMS\OSVR\osvr_service_start.lnk" "${APP_INSTALL_DIR}\bin\osvr_services.exe" "-start" "${APP_INSTALL_DIR}\osvr_server.ico"
+  ShellLink::SetRunAsAdministrator "$SMPROGRAMS\OSVR\osvr_service_start.lnk"
+  Pop $0
+  CreateShortCut "$SMPROGRAMS\OSVR\osvr_uninstall.lnk" "${APP_INSTALL_DIR}\${LOCAL_UNINSTALLER_NAME}" "" "${APP_INSTALL_DIR}\osvr_server.ico"
 
   ; sets the default configuration file. If a user wants to change this, he will have to go in and edit the registry (no tools at the moment)
   ${TimeStamp} $0
@@ -305,7 +323,6 @@ Section "EndInstall" SEC04
 
   WriteRegStr HKLM "Software\OSVR" "InstallationDirectory"             "${APP_INSTALL_DIR}\"
   WriteRegStr HKLM "Software\OSVR" "InstalledVersion"             "${CCVERSION}"
-  ;WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCT_NAME}" '"${APP_INSTALL_DIR}\bin\osvr_server.exe" "${APP_INSTALL_DIR}\bin\osvr_server_config.json"'
  
   ; set up environment variables
   ; include for some of the windows messages defines
@@ -327,10 +344,6 @@ Section "EndInstall" SEC04
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "NoModify" 1
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\osvr_server" "NoRepair" 1
  
-  ; Execute the server if it exist, otherwise skip
-  ; IfFileExists "${APP_INSTALL_DIR}\bin\osvr_server.exe" 0 +2
-  ; Exec '"${APP_INSTALL_DIR}\bin\osvr_server.exe"'
-  
   LogEx::Close
  
  ${TimeStamp} $0
@@ -378,7 +391,7 @@ Section "Uninstall"
 	;MessageBox MB_OK "nsProcess::Unload$\n$\n"
 	${nsProcess::Unload}
    
-   ; Clean up environment variable	
+   ; Clean up environment variables	
    ; delete variable
    DeleteRegValue ${env_hklm} "OSVR_INSTALL_DIR"
    ; make sure windows knows about the change

@@ -1,0 +1,4 @@
+<Uninstaller>
+      <Executable>Uninstall.exe</Executable>
+      <Arguments>/S</Arguments>
+</Uninstaller>
