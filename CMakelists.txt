@@ -1,0 +1,62 @@
+cmake_minimum_required(VERSION 3.0.0)
+project(OSVR-Installer-Win)
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+SET(BUILD_TYPE "DEV" CACHE STRING)
+SET(BUILD_NUMBER "0" CACHE STRING)
+
+add_executable(osvr_server IMPORTED)
+set_property(TARGET osvr_server
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR_Server/osvr_server.exe")
+            
+install(TARGETS iWear
+        COMPONENT "Driver"
+        DESTINATION "Vuzix OSVR SDK/lib")
+        
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/iWear.h"
+        COMPONENT "Header"
+        DESTINATION "Vuzix OSVR SDK/inc")
+        
+install(TARGETS iWearTest iWear
+        COMPONENT "Utils"
+        DESTINATION "Vuzix OSVR SDK/Utilities")
+        
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Quick Start.pdf"
+        COMPONENT "Docs"
+        DESTINATION "Vuzix OSVR SDK/Docs")
+        
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR_Tracker_Viewer"
+        COMPONENT "Demos"
+        DESTINATION "Vuzix OSVR SDK/Demos")
+        
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR_Server/"
+        COMPONENT "OSVR_Server"
+        DESTINATION "Vuzix OSVR SDK/OSVR Server")
+    
+set(CPACK_COMPONENTS_ALL Server Tools Documentation Demos)
+set(CPACK_PACKAGE_VENDOR "OSVR.ORG")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OSVR Runtime")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "${BUILD_NUMBER}")
+set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(CPACK_PACKAGE_NAME "OSVR Runtime")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR")
+#executables should be set in pairs "exe" "exe name" (specify all executables at once)
+set(CPACK_PACKAGE_EXECUTABLES osvr_reset_yaw "iWear OSVR Recenter" 
+                              osvr_server "Launch OSVR Server"
+                              iWearCalibrateGUI "iWear Calibrate GUI")
+set(CPACK_CREATE_DESKTOP_LINKS osvr_reset_yaw 
+                               osvr_server 
+                               iWearCalibrateGUI)
+
+SET(CPACK_GENERATOR WIX)
+SET(CPACK_WIX_UPGRADE_GUID "69CA0E2A-65D4-4191-BA1D-DBE4CA856D0C")
+SET(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server.ico")
+SET(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server_icon_256.png")
+SET(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server_icon_256.png")
+SET(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rtf")
+SET(CPACK_WIX_PROGRAM_MENU_FOLDER "OSVR")
+
+
+INCLUDE(CPack)
