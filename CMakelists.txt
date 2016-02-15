@@ -2,59 +2,78 @@ cmake_minimum_required(VERSION 3.0.0)
 project(OSVR-Installer-Win)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(BUILD_TYPE "DEV" CACHE STRING)
-SET(BUILD_NUMBER "0" CACHE STRING)
+SET(BUILD_TYPE "DEV" CACHE STRING "Either client or dev build type")
+SET(BUILD_NUMBER "0" CACHE STRING "Build number from jenkins")
+SET(OSVR_PACKAGE_NAME "OSVR Runtime")
 
 add_executable(osvr_server IMPORTED)
 set_property(TARGET osvr_server
-            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR_Server/osvr_server.exe")
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/osvr_server.exe")
+
+add_executable(OSVRTrackerView IMPORTED)
+set_property(TARGET OSVRTrackerView
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/OSVRTrackerView.exe")
             
-install(TARGETS iWear
-        COMPONENT "Driver"
-        DESTINATION "Vuzix OSVR SDK/lib")
+add_executable(EnableOSVRDirectMode IMPORTED)
+set_property(TARGET EnableOSVRDirectMode
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/EnableOSVRDirectMode.exe")
+            
+add_executable(DisableOSVRDirectMode IMPORTED)
+set_property(TARGET DisableOSVRDirectMode
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/DisableOSVRDirectMode.exe")
+
+add_executable(RenderManagerD3DPresentExample3D IMPORTED)
+set_property(TARGET RenderManagerD3DPresentExample3D
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/RenderManagerD3DPresentExample3D.exe")
+            
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Documentation/"
+        COMPONENT "Documentation"
+        DESTINATION "Documentation")
         
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/iWear.h"
-        COMPONENT "Header"
-        DESTINATION "Vuzix OSVR SDK/inc")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/"
+        COMPONENT "Server"
+        DESTINATION "Server")
+
+#maybe just remove unnecessary DLLs and files from Tracker-Viewer instead        
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OpenSceneGraph/"
+        COMPONENT "Server"
+        DESTINATION "Server")
         
-install(TARGETS iWearTest iWear
-        COMPONENT "Utils"
-        DESTINATION "Vuzix OSVR SDK/Utilities")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/"
+        COMPONENT "Server"
+        DESTINATION "Server")
         
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Quick Start.pdf"
-        COMPONENT "Docs"
-        DESTINATION "Vuzix OSVR SDK/Docs")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/"
+        COMPONENT "Server"
+        DESTINATION "Server")
         
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR_Tracker_Viewer"
-        COMPONENT "Demos"
-        DESTINATION "Vuzix OSVR SDK/Demos")
-        
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR_Server/"
-        COMPONENT "OSVR_Server"
-        DESTINATION "Vuzix OSVR SDK/OSVR Server")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
+        COMPONENT "Server"
+        DESTINATION ".")
     
-set(CPACK_COMPONENTS_ALL Server Tools Documentation Demos)
-set(CPACK_PACKAGE_VENDOR "OSVR.ORG")
+# set(CPACK_COMPONENTS_ALL Server Tools Documentation Demos)
+set(CPACK_COMPONENTS_ALL Documentation Server)
+set(CPACK_PACKAGE_VENDOR "OSVR")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OSVR Runtime")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "${BUILD_NUMBER}")
 set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-set(CPACK_PACKAGE_NAME "OSVR Runtime")
+set(CPACK_PACKAGE_NAME ${OSVR_PACKAGE_NAME})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR")
 #executables should be set in pairs "exe" "exe name" (specify all executables at once)
-set(CPACK_PACKAGE_EXECUTABLES osvr_reset_yaw "iWear OSVR Recenter" 
-                              osvr_server "Launch OSVR Server"
-                              iWearCalibrateGUI "iWear Calibrate GUI")
-set(CPACK_CREATE_DESKTOP_LINKS osvr_reset_yaw 
-                               osvr_server 
-                               iWearCalibrateGUI)
+set(CPACK_PACKAGE_EXECUTABLES   osvr_server "OSVR Server"
+                                EnableOSVRDirectMode "Enable DirectMode"
+                                DisableOSVRDirectMode "Disable DirectMode"
+                                RenderManagerD3DPresentExample3D "D3D Example"
+                                OSVRTrackerView "Tracker Viewer")
+#set(CPACK_CREATE_DESKTOP_LINKS osvr_server)
 
 SET(CPACK_GENERATOR WIX)
 SET(CPACK_WIX_UPGRADE_GUID "69CA0E2A-65D4-4191-BA1D-DBE4CA856D0C")
 SET(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server.ico")
-SET(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server_icon_256.png")
-SET(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server_icon_256.png")
+SET(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server_icon_Dialog.png")
+SET(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/assets/osvr_server_icon_Banner2.png")
 SET(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rtf")
 SET(CPACK_WIX_PROGRAM_MENU_FOLDER "OSVR")
 
