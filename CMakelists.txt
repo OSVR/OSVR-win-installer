@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.0.0)
 project(OSVR-Installer-Win)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-SET(BUILD_TYPE "DEV" CACHE STRING "Either client or dev build type")
+SET(TYPE "DEV" CACHE STRING "Either client or dev build type")
 SET(BUILD_NUMBER "0" CACHE STRING "Build number from jenkins")
-SET(OSVR_PACKAGE_NAME "OSVR Runtime")
+SET(OSVR_PACKAGE_NAME "OSVR ${TYPE}")
 
 add_executable(osvr_server IMPORTED)
 set_property(TARGET osvr_server
@@ -54,7 +54,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
 # set(CPACK_COMPONENTS_ALL Server Tools Documentation Demos)
 set(CPACK_COMPONENTS_ALL Documentation Server)
 set(CPACK_PACKAGE_VENDOR "OSVR")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OSVR Runtime")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${OSVR_PACKAGE_NAME})
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "${BUILD_NUMBER}")
