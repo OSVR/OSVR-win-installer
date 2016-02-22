@@ -4,7 +4,10 @@ project(OSVR-Installer-Win)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET(TYPE "DEV" CACHE STRING "Either client or dev build type")
 SET(BUILD_NUMBER "0" CACHE STRING "Build number from jenkins")
-SET(OSVR_PACKAGE_NAME "OSVR ${TYPE}")
+SET(OSVR_PACKAGE_NAME "OSVR SDK")
+if(TYPE == "CLIENT")
+    SET(OSVR_PACKAGE_NAME "OSVR Runtime")
+endif()
 
 add_executable(osvr_server IMPORTED)
 set_property(TARGET osvr_server
@@ -31,11 +34,6 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Documentation/"
         DESTINATION "Documentation")
         
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/"
-        COMPONENT "Server"
-        DESTINATION "Server")
-
-#maybe just remove unnecessary DLLs and files from Tracker-Viewer instead        
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OpenSceneGraph/"
         COMPONENT "Server"
         DESTINATION "Server")
         
