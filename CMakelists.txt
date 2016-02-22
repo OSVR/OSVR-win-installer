@@ -5,7 +5,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET(TYPE "DEV" CACHE STRING "Either client or dev build type")
 SET(BUILD_NUMBER "0" CACHE STRING "Build number from jenkins")
 SET(OSVR_PACKAGE_NAME "OSVR SDK")
-if(TYPE == "CLIENT")
+if(${TYPE} == "CLIENT")
     SET(OSVR_PACKAGE_NAME "OSVR Runtime")
 endif()
 
