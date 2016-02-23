@@ -20,7 +20,7 @@ $buildType = $env:TYPE
 function Main() {
 
     Write-Host "Removing extra files from OSVR Tracker Viewer"
-    #Move-OSVR-Tracker-View
+    Move-OSVR-Tracker-View
     Write-Host "Removing extra files from RenderManager"
     Move-RenderManager
 
