@@ -79,9 +79,10 @@ if(${TYPE} STREQUAL "DEV")
         DESTINATION "samples")
 
     set(CPACK_COMPONENTS_ALL Documentation Server Headers Libraries Samples)
-
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR/SDK")
 else()
     set(CPACK_COMPONENTS_ALL Documentation Server)
+    set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR/Runtime")
 endif()
 
 set(CPACK_PACKAGE_VENDOR "OSVR")
@@ -91,7 +92,6 @@ set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "${BUILD_NUMBER}")
 set(CPACK_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
 set(CPACK_PACKAGE_NAME ${OSVR_PACKAGE_NAME})
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR")
 #executables should be set in pairs "exe" "exe name" (specify all executables at once)
 set(CPACK_PACKAGE_EXECUTABLES   osvr_server "OSVR Server"
                                 EnableOSVRDirectMode "Enable DirectMode"
