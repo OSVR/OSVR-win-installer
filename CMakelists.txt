@@ -4,7 +4,7 @@ project(OSVR-Installer-Win)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET(TYPE "DEV" CACHE STRING "Either client or dev build type")
 SET(BUILD_NUMBER "0" CACHE STRING "Build number from jenkins")
-SET(OSVR_PACKAGE_NAME "OSVR Runtime")
+SET(OSVR_PACKAGE_NAME "OSVR-Runtime")
 
 
 add_executable(osvr_server IMPORTED)
@@ -51,7 +51,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
 
 # additional components for dev build
 if(${TYPE} STREQUAL "DEV")
-    SET(OSVR_PACKAGE_NAME "OSVR SDK")
+    SET(OSVR_PACKAGE_NAME "OSVR-SDK")
 
     # copy all OSVR Core headers to include dir
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/include/"
