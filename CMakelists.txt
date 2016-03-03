@@ -5,6 +5,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 SET(TYPE "DEV" CACHE STRING "Either client or dev build type")
 SET(CORE_VER "v0.6-1114-gc3ae55c" CACHE STRING "OSVR Core version")
 SET(OSVR_PACKAGE_NAME "OSVR Runtime")
+SET(BIT "32" CACHE STRING "32 or 64 bit build")
 
 
 add_executable(osvr_server IMPORTED)
@@ -80,13 +81,13 @@ if(${TYPE} STREQUAL "DEV")
 
     set(CPACK_COMPONENTS_ALL Documentation Server Headers Libraries Samples)
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR/SDK")
-    set(CPACK_PACKAGE_FILE_NAME "OSVR-SDK-${CORE_VER}-win")
+    set(CPACK_PACKAGE_FILE_NAME "OSVR-SDK-${CORE_VER}-win-${BIT}bit")
 
 #client installer details
 else()
     set(CPACK_COMPONENTS_ALL Documentation Server)
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR/Runtime")
-    set(CPACK_PACKAGE_FILE_NAME "OSVR-Runtime-${CORE_VER}-win")
+    set(CPACK_PACKAGE_FILE_NAME "OSVR-Runtime-${CORE_VER}-win-${BIT}bit")
 endif()
 
 set(CPACK_PACKAGE_VENDOR "OSVR")
