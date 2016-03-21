@@ -1,0 +1,5 @@
+<CPackWiXPatch>
+    <CPackWiXFragment Id="CM_CP_Server.Server.osvr_server.exe">
+        <Environment Id="OSVR_SERVER_ROOT" Name="OSVR_SERVER_ROOT" Value="[CM_DP_Server.Server]" Permanent="no" Part="last" Action="set" System="no" />
+    </CPackWiXFragment>
+</CPackWiXPatch>
