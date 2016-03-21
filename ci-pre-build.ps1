@@ -23,6 +23,8 @@ function Main() {
     Move-OSVR-Tracker-View
     Write-Host "Removing extra files from RenderManager"
     Move-RenderManager
+    Write-Host "Removing extra files from OSVR Core"
+    Move-OSVR-Core
 
     Write-Host "ci-build complete!"
 }
