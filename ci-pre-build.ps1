@@ -27,6 +27,15 @@ function Main() {
     Write-Host "ci-build complete!"
 }
 
+function Move-OSVR-Core() {
+    # Extra files to remove OSVR Core
+    $OSVRFiles = 'NOTICE'
+
+    $serverDir = "OSVR-Server"
+    $OSVRPaths = $OSVRFiles| % {Join-Path $serverDir "$_"}
+    Remove-Item $OSVRPaths
+}
+
 function Move-OSVR-Tracker-View() {
     # Extra files to remove OSVR Tracker Viewer
     $OSVRFiles = 'osvr-ver.txt',
@@ -39,12 +48,19 @@ function Move-OSVR-Tracker-View() {
         'LICENSE',
         'CONTRIBUTING.md',
         'NOTICE',
-        'README.md',
-        'README-components-and-licenses.txt'
+        'README.md'
+
+    # Rename license file
+    $LicenseReadme = 'README-components-and-licenses.txt'
+    $NewLicenseReadme = 'Tracker-Viewer-components-and-licenses.txt'
 
     $trackViewDir = "OSVR-Tracker-Viewer"
+
     $OSVRPaths = $OSVRFiles| % {Join-Path $trackViewDir "$_"}
     Remove-Item $OSVRPaths
+
+    $LicensePath = $LicenseReadme| % {Join-Path $trackViewDir "$_"}
+    Rename-Item -Path $LicensePath -NewName $NewLicenseReadme
 
     Remove-Item -Recurse -Path $trackViewDir -Include *.7z
 }

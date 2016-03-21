@@ -50,6 +50,10 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
         COMPONENT "Server"
         DESTINATION ".")
 
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/NOTICE"
+        COMPONENT "Server"
+        DESTINATION "bin")
+
 # additional components for SDK build
 if(${TYPE} STREQUAL "DEV")
     SET(OSVR_PACKAGE_NAME "OSVR SDK")
