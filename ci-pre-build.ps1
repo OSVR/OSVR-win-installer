@@ -18,7 +18,8 @@ $buildType = $env:TYPE
 
 # "Entry Point" function
 function Main() {
-
+    Write-Host "Moving RenderManager contents up one dir"
+    MoveUpOneDir("RenderManager\install")
     Write-Host "Removing extra files from OSVR Tracker Viewer"
     Move-OSVR-Tracker-View
     Write-Host "Removing extra files from RenderManager"
@@ -27,6 +28,26 @@ function Main() {
     Move-OSVR-Core
 
     Write-Host "ci-build complete!"
+}
+
+function MoveUpOneDir([string]$dirPath){
+    $files = get-childitem -path . -filter $dirPath
+        foreach ($file in $files) {
+            $subFiles = get-childitem -path $file.FullName
+            foreach ($subFile in $subFiles) {
+                $tempName = $file.Parent.FullName + "\" + $subFile.Name + '-foo'
+                $newName = $file.Parent.FullName + "\" + $subFile.Name
+                #output for testing
+                #write-host "Old Location: " $subFile.FullName
+                #write-host "New Location:" $newName
+                
+                write-host "Moving: " + $subFile
+                move-item -path $subFile.FullName -dest $tempName
+                move-item -path $tempName -dest $newName
+            }
+        }
+    write-host "Removing empty dir" : $file.FullName
+    remove-item -path $file.FullName
 }
 
 function Move-OSVR-Core() {
