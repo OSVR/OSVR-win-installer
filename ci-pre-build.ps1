@@ -20,6 +20,8 @@ $buildType = $env:TYPE
 function Main() {
     Write-Host "Moving RenderManager contents up one dir"
     MoveUpOneDir("RenderManager\install")
+    Write-Host "Moving OSVR-Config contents up one dir"
+    MoveUpOneDir("OSVR-Config\artifacts")
     Write-Host "Removing extra files from OSVR Tracker Viewer"
     Move-OSVR-Tracker-View
     Write-Host "Removing extra files from RenderManager"
@@ -40,7 +42,7 @@ function MoveUpOneDir([string]$dirPath){
                 #output for testing
                 #write-host "Old Location: " $subFile.FullName
                 #write-host "New Location:" $newName
-                
+
                 write-host "Moving: " + $subFile
                 move-item -path $subFile.FullName -dest $tempName
                 move-item -path $tempName -dest $newName
