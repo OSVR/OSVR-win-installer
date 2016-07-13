@@ -35,6 +35,14 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Documentation/"
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/"
         COMPONENT "Server"
         DESTINATION "bin")
+        
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Central/"
+        COMPONENT "Server"
+        DESTINATION "bin")
+        
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Config/"
+        COMPONENT "Server"
+        DESTINATION "config")
 
 #copy all binaries from osvr server for both dev and client builds
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/bin/"
@@ -85,13 +93,13 @@ if(${TYPE} STREQUAL "DEV")
 
     set(CPACK_COMPONENTS_ALL Documentation Server Headers Libraries Samples)
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR/SDK")
-    set(CPACK_PACKAGE_FILE_NAME "OSVR-SDK-${CORE_VER}-win-${BIT}bit")
+    set(CPACK_PACKAGE_FILE_NAME "SDK")
 
 # runtime installer details
 else()
     set(CPACK_COMPONENTS_ALL Documentation Server)
     set(CPACK_PACKAGE_INSTALL_DIRECTORY "OSVR/Runtime")
-    set(CPACK_PACKAGE_FILE_NAME "OSVR-Runtime-${CORE_VER}-win-${BIT}bit")
+    set(CPACK_PACKAGE_FILE_NAME "Runtime")
 endif()
 
 set(CPACK_PACKAGE_VENDOR "OSVR")
