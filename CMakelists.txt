@@ -36,6 +36,10 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/"
         COMPONENT "Server"
         DESTINATION "bin")
         
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Central/"
+        COMPONENT "Server"
+        DESTINATION "bin")
+        
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Config/"
         COMPONENT "Server"
         DESTINATION "config")
