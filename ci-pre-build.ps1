@@ -22,6 +22,8 @@ function Main() {
     MoveUpOneDir("RenderManager\install")
     Write-Host "Moving OSVR-Config contents up one dir"
     MoveUpOneDir("OSVR-Config\artifacts")
+    Write-Host "Moving OSVR-Central contents up one dir"
+    MoveUpOneDir("OSVR-Central\bin")
     Write-Host "Removing extra files from OSVR Tracker Viewer"
     Move-OSVR-Tracker-View
     Write-Host "Removing extra files from RenderManager"
