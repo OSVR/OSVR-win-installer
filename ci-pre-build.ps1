@@ -144,8 +144,6 @@ function Move-OSVR-Central(){
 
     $OSVRPaths = $OSVRFiles| % {Join-Path $centralDir "$_"}
     Remove-Item $OSVRPaths
-
-    Remove-Item -Recurse -Path $centralDir
 }
 
 # call the entry point
