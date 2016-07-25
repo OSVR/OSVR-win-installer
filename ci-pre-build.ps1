@@ -138,7 +138,7 @@ function Move-OSVR-Central(){
         'osvrClientKit.dll',
         'osvrCommon.dll',
         'osvrPluginHost.dll',
-        'osvrUtil.dll',
+        'osvrUtil.dll'
 
     $centralDir = "OSVR-Central"
 
