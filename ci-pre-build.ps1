@@ -24,12 +24,12 @@ function Main() {
     MoveUpOneDir("OSVR-Config\artifacts")
     Write-Host "Moving OSVR-Central contents up one dir"
     MoveUpOneDir("OSVR-Central\bin")
+    Write-Host "Removing extra files from OSVR-Central"
+    Move-OSVR-Central
     Write-Host "Removing extra files from OSVR Tracker Viewer"
     Move-OSVR-Tracker-View
     Write-Host "Removing extra files from RenderManager"
     Move-RenderManager
-    # Write-Host "Removing extra files from OSVR Core"
-    # Move-OSVR-Core
 
     Write-Host "ci-build complete!"
 }
@@ -94,7 +94,7 @@ function Move-OSVR-Tracker-View() {
 
 function Move-RenderManager(){
 
-    # Extra files to remove OSVR Tracker Viewer
+    # Extra files to remove OSVR RenderManager
     $OSVRFiles = 'osvrClientKit.dll',
         'osvrClient.dll',
         'osvrUtil.dll',
@@ -130,6 +130,22 @@ function Move-RenderManager(){
         $RMPaths = $RMFiles| % {Join-Path $RMPath "$_"}
         Remove-Item $RMPaths
     }
+}
+
+function Move-OSVR-Central(){
+    # Extra files to remove OSVR-Central
+    $OSVRFiles = 'osvrClient.dll',
+        'osvrClientKit.dll',
+        'osvrCommon.dll',
+        'osvrPluginHost.dll',
+        'osvrUtil.dll',
+
+    $centralDir = "OSVR-Central"
+
+    $OSVRPaths = $OSVRFiles| % {Join-Path $centralDir "$_"}
+    Remove-Item $OSVRPaths
+
+    Remove-Item -Recurse -Path $centralDir
 }
 
 # call the entry point
