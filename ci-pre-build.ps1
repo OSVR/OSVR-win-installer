@@ -54,13 +54,16 @@ function Main() {
     MoveUpOneDir("OSVR-Config\artifacts")
 
     Write-Host "Removing extra files from OSVR-Central"
-    Move-OSVR-Central
+    Move-OSVR-Central "OSVR-Central\x86"
+    Move-OSVR-Central "OSVR-Central\x64"
 
     Write-Host "Removing extra files from OSVR Tracker Viewer"
-    Move-OSVR-Tracker-View
+    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer\x86"
+    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer\x64"
 
     Write-Host "Removing extra files from RenderManager"
-    Move-RenderManager
+    Move-RenderManager "RenderManager\x86"
+    Move-RenderManager "RenderManager\x64"
 
     Write-Host "ci-build complete!"
 }
@@ -94,7 +97,7 @@ function Move-OSVR-Core() {
     Remove-Item $OSVRPaths
 }
 
-function Move-OSVR-Tracker-View() {
+function Move-OSVR-Tracker-View([string]$trackViewDir) {
     # Extra files to remove OSVR Tracker Viewer
     $OSVRFiles = 'osvr-ver.txt',
         'osvrClientKit.dll',
@@ -112,8 +115,6 @@ function Move-OSVR-Tracker-View() {
     $LicenseReadme = 'README-components-and-licenses.txt'
     $NewLicenseReadme = 'Tracker-Viewer-components-and-licenses.txt'
 
-    $trackViewDir = "OSVR-Tracker-Viewer"
-
     $OSVRPaths = $OSVRFiles| % {Join-Path $trackViewDir "$_"}
     Remove-Item $OSVRPaths
 
@@ -123,7 +124,7 @@ function Move-OSVR-Tracker-View() {
     Remove-Item -Recurse -Path $trackViewDir -Include *.7z
 }
 
-function Move-RenderManager(){
+function Move-RenderManager([string]$RMDir){
 
     # Extra files to remove OSVR RenderManager
     $OSVRFiles = 'osvrClientKit.dll',
@@ -131,7 +132,6 @@ function Move-RenderManager(){
         'osvrUtil.dll',
         'osvrCommon.dll'
 
-    $RMDir = "RenderManager"
     $binDir = "bin"
     $RMPath = Join-Path $RMDir $binDir
     $RMPaths = $OSVRFiles| % {Join-Path $RMPath "$_"}
@@ -162,15 +162,13 @@ function Move-RenderManager(){
     }
 }
 
-function Move-OSVR-Central(){
+function Move-OSVR-Central([string]$centralDir){
     # Extra files to remove OSVR-Central
     $OSVRFiles = 'osvrClient.dll',
         'osvrClientKit.dll',
         'osvrCommon.dll',
         'osvrPluginHost.dll',
         'osvrUtil.dll'
-
-    $centralDir = "OSVR-Central"
 
     $OSVRPaths = $OSVRFiles| % {Join-Path $centralDir "$_"}
     Remove-Item $OSVRPaths
