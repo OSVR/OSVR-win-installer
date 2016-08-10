@@ -83,7 +83,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/NOTICE"
 if(${TYPE} STREQUAL "DEV")
     SET(OSVR_PACKAGE_NAME "OSVR SDK")
     SET(CPACK_WIX_UPGRADE_GUID "1825FD58-B969-40B6-AE40-04613561EB82")
-    
+
     # copy all OSVR Core headers to include dir
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/include/"
         COMPONENT "Headers"
@@ -96,7 +96,7 @@ if(${TYPE} STREQUAL "DEV")
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/lib/"
         COMPONENT "Libraries"
         DESTINATION "SDK/lib/x64")
-        
+
     # copy all RenderManager headers to include
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/include/"
         COMPONENT "Headers"
@@ -109,7 +109,7 @@ if(${TYPE} STREQUAL "DEV")
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/lib/"
         COMPONENT "Libraries"
         DESTINATION "SDK/lib/x64")
-        
+
     # copy OSVR Core 32 and 64 bit share to samples
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x86/share/"
         COMPONENT "Samples"
