@@ -20,20 +20,20 @@ $buildType = $env:TYPE
 function Main() {
 
     Write-Host "Renaming RenderManager folders"
-    Rename-Dir("RenderManager\BIT=32,label=windows", "x86")
-    Rename-Dir("RenderManager\BIT=64,label=windows", "x64")
+    Rename-Dir "RenderManager\BIT=32,label=windows" "x86"
+    Rename-Dir "RenderManager\BIT=64,label=windows" "x64"
 
     Write-Host "Renaming OSVR-Core folders"
-    Rename-Dir("OSVR-Core\BIT=32", "x86")
-    Rename-Dir("OSVR-Core\BIT=64", "x64")
+    Rename-Dir "OSVR-Core\BIT=32" "x86"
+    Rename-Dir "OSVR-Core\BIT=64" "x64"
 
     Write-Host "Renaming OSVR-Central folders"
-    Rename-Dir("OSVR-Central\BIT=32,VS=12,host=windows", "x86")
-    Rename-Dir("OSVR-Central\BIT=64,VS=12,host=windows", "x64")
+    Rename-Dir "OSVR-Central\BIT=32,VS=12,host=windows" "x86" 
+    Rename-Dir "OSVR-Central\BIT=64,VS=12,host=windows" "x64" 
 
     Write-Host "Renaming OSVR-Tracker-Viewer folders"
-    Rename-Dir("OSVR-Tracker-Viewer\BIT=32,label=windows", "x86")
-    Rename-Dir("OSVR-Tracker-Viewer\BIT=64,label=windows", "x64")
+    Rename-Dir "OSVR-Tracker-Viewer\BIT=32,label=windows" "x86" 
+    Rename-Dir "OSVR-Tracker-Viewer\BIT=64,label=windows" "x64" 
 
     Write-Host "Moving 32 bit RenderManager contents up one dir"
     MoveUpOneDir("RenderManager\x86\install")
