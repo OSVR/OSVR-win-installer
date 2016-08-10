@@ -113,7 +113,6 @@ function Move-RenderManager(){
         #Extra files to remove for client build
         $RMFiles = 'AdjustableRenderingDelayD3D.exe',
             'AdjustableRenderingDelayOpenGL.exe',
-            'DirectModeDebugging.exe',
             'LatencyTestD3DExample.exe',
             'RenderManagerD3DExample3D.exe',
             'RenderManagerD3DHeadSpaceExample.exe',
