@@ -18,16 +18,47 @@ $buildType = $env:TYPE
 
 # "Entry Point" function
 function Main() {
-    Write-Host "Moving RenderManager contents up one dir"
-    MoveUpOneDir("RenderManager\install")
+
+    Write-Host "Renaming RenderManager folders"
+    Rename-Dir("RenderManager\BIT=32,label=windows", "x86")
+    Rename-Dir("RenderManager\BIT=64,label=windows", "x64")
+
+    Write-Host "Renaming OSVR-Core folders"
+    Rename-Dir("OSVR-Core\BIT=32", "x86")
+    Rename-Dir("OSVR-Core\BIT=64", "x64")
+
+    Write-Host "Renaming OSVR-Central folders"
+    Rename-Dir("OSVR-Central\BIT=32,VS=12,host=windows", "x86")
+    Rename-Dir("OSVR-Central\BIT=64,VS=12,host=windows", "x64")
+
+    Write-Host "Renaming OSVR-Tracker-Viewer folders"
+    Rename-Dir("OSVR-Tracker-Viewer\BIT=32,label=windows", "x86")
+    Rename-Dir("OSVR-Tracker-Viewer\BIT=64,label=windows", "x64")
+
+    Write-Host "Moving 32 bit RenderManager contents up one dir"
+    MoveUpOneDir("RenderManager\x86\install")
+    Write-Host "Moving 64 bit RenderManager contents up one dir"
+    MoveUpOneDir("RenderManager\x64\install")
+
+    Write-Host "Moving 32 bit OSVR-Central contents up one dir"
+    MoveUpOneDir("OSVR-Central\x86\bin")
+    Write-Host "Moving 64 bit OSVR-Central contents up one dir"
+    MoveUpOneDir("OSVR-Central\x64\bin")
+
+    Write-Host "Moving 32 bit OSVR-Core contents up one dir"
+    MoveUpOneDir("OSVR-Core\x86\install")
+    Write-Host "Moving 64 bit OSVR-Core contents up one dir"
+    MoveUpOneDir("OSVR-Core\x64\install")
+
     Write-Host "Moving OSVR-Config contents up one dir"
     MoveUpOneDir("OSVR-Config\artifacts")
-    Write-Host "Moving OSVR-Central contents up one dir"
-    MoveUpOneDir("OSVR-Central\bin")
+
     Write-Host "Removing extra files from OSVR-Central"
     Move-OSVR-Central
+
     Write-Host "Removing extra files from OSVR Tracker Viewer"
     Move-OSVR-Tracker-View
+
     Write-Host "Removing extra files from RenderManager"
     Move-RenderManager
 
@@ -143,6 +174,10 @@ function Move-OSVR-Central(){
 
     $OSVRPaths = $OSVRFiles| % {Join-Path $centralDir "$_"}
     Remove-Item $OSVRPaths
+}
+
+function Rename-Dir([string]$oldName, [string]$newName){
+    Rename-Item -path $oldName -newName $newName
 }
 
 # call the entry point
