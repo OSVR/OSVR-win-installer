@@ -77,7 +77,11 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/NOTICE"
         COMPONENT "Server"
-        DESTINATION "Runtime/bin")
+        DESTINATION "Runtime/bin/x86")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/NOTICE"
+        COMPONENT "Server"
+        DESTINATION "Runtime/bin/x64")
+
 
 # additional components for SDK build
 if(${TYPE} STREQUAL "DEV")
