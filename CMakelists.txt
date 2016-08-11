@@ -79,7 +79,7 @@ if(${TYPE} STREQUAL "DEV")
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/"
         COMPONENT "SDK"
         DESTINATION "SDK/x64")
-        
+
     # copy all RenderManager headers to include
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x86/"
         COMPONENT "Headers"
