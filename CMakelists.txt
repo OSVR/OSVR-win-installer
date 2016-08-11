@@ -10,23 +10,23 @@ SET(CPACK_WIX_UPGRADE_GUID "69CA0E2A-65D4-4191-BA1D-DBE4CA856D0C")
 
 add_executable(osvr_server IMPORTED)
 set_property(TARGET osvr_server
-            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/bin/osvr_server.exe")
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Core/bin/osvr_server.exe")
 
 add_executable(OSVRTrackerView IMPORTED)
 set_property(TARGET OSVRTrackerView
-            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/x64/OSVRTrackerView.exe")
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/OSVRTrackerView.exe")
 
 add_executable(EnableOSVRDirectMode IMPORTED)
 set_property(TARGET EnableOSVRDirectMode
-            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/EnableOSVRDirectMode.exe")
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RM/EnableOSVRDirectMode.exe")
 
 add_executable(DisableOSVRDirectMode IMPORTED)
 set_property(TARGET DisableOSVRDirectMode
-            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/DisableOSVRDirectMode.exe")
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RM/DisableOSVRDirectMode.exe")
 
 add_executable(RenderManagerD3DPresentExample3D IMPORTED)
 set_property(TARGET RenderManagerD3DPresentExample3D
-            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/RenderManagerD3DPresentExample3D.exe")
+            PROPERTY IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/RM/RenderManagerD3DPresentExample3D.exe")
 
 add_executable(osvr_central IMPORTED)
 set_property(TARGET osvr_central
@@ -36,40 +36,27 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Documentation/"
         COMPONENT "Documentation"
         DESTINATION "Runtime/Documentation")
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/x86/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/"
         COMPONENT "Server"
-        DESTINATION "Runtime/bin/x86")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Tracker-Viewer/x64/"
-        COMPONENT "Server"
-        DESTINATION "Runtime/bin/x64")
+        DESTINATION "Runtime/bin")
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Central/x86/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Central/"
         COMPONENT "Server"
-        DESTINATION "Runtime/bin/x86")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Central/x64/"
-        COMPONENT "Server"
-        DESTINATION "Runtime/bin/x64")
+        DESTINATION "Runtime/bin")
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Config/"
         COMPONENT "Server"
         DESTINATION "Runtime/config")
 
 #copy all binaries from osvr server for both dev and client builds
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x86/bin/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Core/"
         COMPONENT "Server"
-        DESTINATION "Runtime/bin/x86")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/bin/"
-        COMPONENT "Server"
-        DESTINATION "Runtime/bin/x64")
-
+        DESTINATION "Runtime")
 
 #copy binaries from render manager for both dev and client builds
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x86/bin/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RM/bin/"
         COMPONENT "Server"
-        DESTINATION "Runtime/bin/x86")
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/bin/"
-        COMPONENT "Server"
-        DESTINATION "Runtime/bin/x64")
+        DESTINATION "Runtime/bin")
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
         COMPONENT "Server"
@@ -77,10 +64,7 @@ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/NOTICE"
         COMPONENT "Server"
-        DESTINATION "Runtime/bin/x86")
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/NOTICE"
-        COMPONENT "Server"
-        DESTINATION "Runtime/bin/x64")
+        DESTINATION "Runtime/bin")
 
 
 # additional components for SDK build
@@ -88,41 +72,23 @@ if(${TYPE} STREQUAL "DEV")
     SET(OSVR_PACKAGE_NAME "OSVR SDK")
     SET(CPACK_WIX_UPGRADE_GUID "1825FD58-B969-40B6-AE40-04613561EB82")
 
-    # copy all OSVR Core headers to include dir
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/include/"
-        COMPONENT "Headers"
-        DESTINATION "SDK/include")
-
-    # copy all OSVR Core 32/64 bit libs
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x86/lib/"
-        COMPONENT "Libraries"
-        DESTINATION "SDK/lib/x86")
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/lib/"
-        COMPONENT "Libraries"
-        DESTINATION "SDK/lib/x64")
-
+    # copy all OSVR Core
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x86/"
+        COMPONENT "SDK"
+        DESTINATION "SDK/x86")
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/"
+        COMPONENT "SDK"
+        DESTINATION "SDK/x64")
+        
     # copy all RenderManager headers to include
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/include/"
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x86/"
         COMPONENT "Headers"
-        DESTINATION "SDK/include")
+        DESTINATION "SDK/x86")
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/"
+        COMPONENT "SDK"
+        DESTINATION "SDK/x64")
 
-    # copy all RenderManager 32/64 bit libs
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x86/lib/"
-        COMPONENT "Libraries"
-        DESTINATION "SDK/lib/x86")
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/lib/"
-        COMPONENT "Libraries"
-        DESTINATION "SDK/lib/x64")
-
-    # copy OSVR Core 32 and 64 bit share to samples
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x86/share/"
-        COMPONENT "Samples"
-        DESTINATION "SDK/samples/x86")
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/share/"
-        COMPONENT "Samples"
-        DESTINATION "SDK/samples/x64")
-
-    set(CPACK_COMPONENTS_ALL Documentation Server Headers Libraries Samples)
+    set(CPACK_COMPONENTS_ALL Documentation Server SDK)
     set(CPACK_PACKAGE_FILE_NAME "SDK")
 
 # runtime installer details
