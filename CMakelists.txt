@@ -54,7 +54,7 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Core/"
         DESTINATION "Runtime")
 
 #copy binaries from render manager for both dev and client builds
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RM/bin/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RM/"
         COMPONENT "Server"
         DESTINATION "Runtime/bin")
 
