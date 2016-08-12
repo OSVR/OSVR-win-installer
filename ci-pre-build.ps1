@@ -27,23 +27,13 @@ function Main() {
     Rename-Dir "OSVR-Core\BIT=32" "x86"
     Rename-Dir "OSVR-Core\BIT=64" "x64"
 
-    Write-Host "Renaming OSVR-Central folders"
-    Rename-Dir "OSVR-Central\BIT=32,VS=12,host=windows" "x86"
-    Rename-Dir "OSVR-Central\BIT=64,VS=12,host=windows" "x64"
-
-    Write-Host "Renaming OSVR-Tracker-Viewer folders"
-    Rename-Dir "OSVR-Tracker-Viewer\BIT=32,label=windows" "x86"
-    Rename-Dir "OSVR-Tracker-Viewer\BIT=64,label=windows" "x64"
-
     Write-Host "Moving 32 bit RenderManager contents up one dir"
     MoveUpOneDir("RenderManager\x86\install")
     Write-Host "Moving 64 bit RenderManager contents up one dir"
     MoveUpOneDir("RenderManager\x64\install")
 
-    Write-Host "Moving 32 bit OSVR-Central contents up one dir"
-    MoveUpOneDir("OSVR-Central\x86\bin")
-    Write-Host "Moving 64 bit OSVR-Central contents up one dir"
-    MoveUpOneDir("OSVR-Central\x64\bin")
+    Write-Host "Moving OSVR-Central contents up one dir"
+    MoveUpOneDir("OSVR-Central\bin")
 
     Write-Host "Moving 32 bit OSVR-Core contents up one dir"
     MoveUpOneDir("OSVR-Core\x86\install")
@@ -54,12 +44,10 @@ function Main() {
     MoveUpOneDir("OSVR-Config\artifacts")
 
     Write-Host "Removing extra files from OSVR-Central"
-    Move-OSVR-Central "OSVR-Central\x86"
-    Move-OSVR-Central "OSVR-Central\x64"
+    Move-OSVR-Central "OSVR-Central"
 
     Write-Host "Removing extra files from OSVR Tracker Viewer"
-    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer\x86"
-    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer\x64"
+    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer"
 
     Write-Host "Removing extra files from RenderManager"
     Move-RenderManager "RenderManager\x86"
