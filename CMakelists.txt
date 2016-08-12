@@ -82,7 +82,7 @@ if(${TYPE} STREQUAL "DEV")
 
     # copy all RenderManager headers to include
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x86/"
-        COMPONENT "Headers"
+        COMPONENT "SDK"
         DESTINATION "SDK/x86")
     install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager/x64/"
         COMPONENT "SDK"
