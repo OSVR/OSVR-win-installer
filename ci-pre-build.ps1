@@ -22,8 +22,8 @@ function Main() {
     if($buildType.compareTo("DEV") -eq 0){
 
         Write-Host "Renaming RenderManager folders"
-        Rename-Dir "RenderManager\BIT=32,label=windows" "x86"
-        Rename-Dir "RenderManager\BIT=64,label=windows" "x64"
+        Rename-Dir "RenderManager\BIT=32" "x86"
+        Rename-Dir "RenderManager\BIT=64" "x64"
 
         Write-Host "Renaming OSVR-Core folders"
         Rename-Dir "OSVR-Core\BIT=32" "x86"
