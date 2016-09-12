@@ -53,9 +53,13 @@ function Main() {
     Write-Host "Removing extra files from OSVR Tracker Viewer"
     Move-OSVR-Tracker-View "OSVR-Tracker-Viewer"
 
-    Write-Host "Removing extra files from RenderManager"
-    Move-RenderManager "RenderManager\x86"
-    Move-RenderManager "RenderManager\x64"
+    if($buildType.compareTo("DEV") -eq 0){
+        Write-Host "Removing extra files from RenderManager-SDK"
+        Move-RenderManager-SDK "RenderManager\x86"
+        Move-RenderManager-SDK "RenderManager\x64"
+    }
+    Write-Host "Removing extra files from RenderManager-Release"
+    Move-RenderManager "RenderManager-Release"
 
     Write-Host "ci-build complete!"
 }
@@ -101,6 +105,7 @@ function Move-OSVR-Core() {
 }
 
 function Move-OSVR-Tracker-View([string]$trackViewDir) {
+
     # Extra files to remove OSVR Tracker Viewer
     $OSVRFiles = 'osvr-ver.txt',
         'osvrClientKit.dll',
@@ -130,6 +135,44 @@ function Move-OSVR-Tracker-View([string]$trackViewDir) {
 function Move-RenderManager([string]$RMDir){
 
     # Extra files to remove OSVR RenderManager
+    $ExtraFiles = 'osvrClientKit.dll',
+        'osvrClient.dll',
+        'osvrUtil.dll',
+        'osvrCommon.dll',
+        'osvr-ver.txt',
+        'AdjustableRenderingDelayD3D.exe',
+        'AdjustableRenderingDelayOpenGL.exe',
+        'LatencyTestD3DExample.exe',
+        'RenderManagerD3DExample3D.exe',
+        'RenderManagerD3DHeadSpaceExample.exe',
+        'RenderManagerD3DPresentMakeDeviceExample3D.exe',
+        'RenderManagerD3DPresentSideBySideExample.exe',
+        'RenderManagerD3DTest2D.exe',
+        'RenderManagerOpenGLCoreExample.exe',
+        'RenderManagerOpenGLExample.exe',
+        'RenderManagerOpenGLHeadSpaceExample.exe',
+        'RenderManagerOpenGLPresentExample.exe',
+        'RenderManagerOpenGLPresentSideBySideExample.exe',
+        'SpinCubeD3D.exe',
+        'SpinCubeOpenGL.exe'
+
+    $ExtraDirs = 'include',
+                 'lib'
+
+    $binDir = "bin"
+    $RMPath = Join-Path $RMDir $binDir
+    $RMPaths = $ExtraFiles| % {Join-Path $RMPath "$_"}
+    Remove-Item $RMPaths
+
+    Write-Host "Removing extra dirs from RenderManager-Release"
+    $RMPaths = $ExtraDirs| % {Join-Path $RMDir "$_"}
+    Remove-Item -Path $RMPaths -Recurse -Force
+
+}
+
+function Move-RenderManager-SDK([string]$RMDir){
+
+    # Extra files to remove OSVR RenderManager
     $OSVRFiles = 'osvrClientKit.dll',
         'osvrClient.dll',
         'osvrUtil.dll',
@@ -137,36 +180,13 @@ function Move-RenderManager([string]$RMDir){
         'osvrClientKitd.dll',
         'osvrClientd.dll',
         'osvrUtild.dll',
-        'osvrCommond.dll'
+        'osvrCommond.dll,
+        osvr-ver.txt'
 
     $binDir = "bin"
     $RMPath = Join-Path $RMDir $binDir
     $RMPaths = $OSVRFiles| % {Join-Path $RMPath "$_"}
     Remove-Item $RMPaths
-
-
-    if($buildType.compareTo("CLIENT") -eq 0)
-    {
-        Write-Host "Removing additional files from RenderManager for client build"
-        #Extra files to remove for client build
-        $RMFiles = 'AdjustableRenderingDelayD3D.exe',
-            'AdjustableRenderingDelayOpenGL.exe',
-            'LatencyTestD3DExample.exe',
-            'RenderManagerD3DExample3D.exe',
-            'RenderManagerD3DHeadSpaceExample.exe',
-            'RenderManagerD3DPresentMakeDeviceExample3D.exe',
-            'RenderManagerD3DPresentSideBySideExample.exe',
-            'RenderManagerD3DTest2D.exe',
-            'RenderManagerOpenGLCoreExample.exe',
-            'RenderManagerOpenGLExample.exe',
-            'RenderManagerOpenGLHeadSpaceExample.exe',
-            'RenderManagerOpenGLPresentExample.exe',
-            'RenderManagerOpenGLPresentSideBySideExample.exe',
-            'SpinCubeD3D.exe',
-            'SpinCubeOpenGL.exe'
-        $RMPaths = $RMFiles| % {Join-Path $RMPath "$_"}
-        Remove-Item $RMPaths
-    }
 }
 
 function Move-OSVR-Central([string]$centralDir){
