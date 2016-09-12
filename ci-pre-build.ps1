@@ -142,7 +142,6 @@ function Move-RenderManager([string]$RMDir){
         'osvrClient.dll',
         'osvrUtil.dll',
         'osvrCommon.dll',
-        'osvr-ver.txt',
         'AdjustableRenderingDelayD3D.exe',
         'AdjustableRenderingDelayOpenGL.exe',
         'LatencyTestD3DExample.exe',
@@ -166,6 +165,7 @@ function Move-RenderManager([string]$RMDir){
     $RMPath = Join-Path $RMDir $binDir
     $RMPaths = $ExtraFiles| % {Join-Path $RMPath "$_"}
     Remove-Item $RMPaths
+    Remove-Item (Join-Path $RMDir 'osvr-ver.txt')
 
     Write-Host "Removing extra dirs from RenderManager-Release"
     $RMPaths = $ExtraDirs| % {Join-Path $RMDir "$_"}
@@ -183,13 +183,13 @@ function Move-RenderManager-SDK([string]$RMDir){
         'osvrClientKitd.dll',
         'osvrClientd.dll',
         'osvrUtild.dll',
-        'osvrCommond.dll,
-        osvr-ver.txt'
+        'osvrCommond.dll'
 
     $binDir = "bin"
     $RMPath = Join-Path $RMDir $binDir
     $RMPaths = $OSVRFiles| % {Join-Path $RMPath "$_"}
     Remove-Item $RMPaths
+    Remove-Item (Join-Path $RMDir 'osvr-ver.txt')
 }
 
 function Move-OSVR-Central([string]$centralDir){
