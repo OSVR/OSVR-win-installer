@@ -49,12 +49,12 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Config/"
         DESTINATION "Runtime/config")
 
 #copy all binaries from osvr server for both dev and client builds
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Core/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Core-Release/"
         COMPONENT "Server"
         DESTINATION "Runtime")
 
 #copy binaries from render manager for both dev and client builds
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RM/"
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/RenderManager-Release/"
         COMPONENT "Server"
         DESTINATION "Runtime")
 
@@ -73,10 +73,10 @@ if(${TYPE} STREQUAL "DEV")
     SET(CPACK_WIX_UPGRADE_GUID "1825FD58-B969-40B6-AE40-04613561EB82")
 
     # copy all OSVR Core
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x86/"
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Core/x86/"
         COMPONENT "SDK"
         DESTINATION "SDK/x86")
-    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Server/x64/"
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/OSVR-Core/x64/"
         COMPONENT "SDK"
         DESTINATION "SDK/x64")
 
