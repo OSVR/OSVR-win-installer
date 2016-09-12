@@ -18,26 +18,56 @@ $buildType = $env:TYPE
 
 # "Entry Point" function
 function Main() {
-    Write-Host "Moving RenderManager contents up one dir"
-    MoveUpOneDir("RenderManager\install")
-    Write-Host "Moving OSVR-Config contents up one dir"
-    MoveUpOneDir("OSVR-Config\artifacts")
+
+    Write-Host "Renaming RenderManager folders"
+    Rename-Dir "RenderManager\BIT=32,label=windows" "x86"
+    Rename-Dir "RenderManager\BIT=64,label=windows" "x64"
+
+    Write-Host "Renaming OSVR-Core folders"
+    Rename-Dir "OSVR-Core\BIT=32" "x86"
+    Rename-Dir "OSVR-Core\BIT=64" "x64"
+
+    Write-Host "Moving 32 bit RenderManager contents up one dir"
+    MoveUpOneDir("RenderManager\x86\install")
+    Write-Host "Moving 64 bit RenderManager contents up one dir"
+    MoveUpOneDir("RenderManager\x64\install")
+    Write-Host "Moving RenderManager-Release contents up one dir"
+    MoveUpOneDir("RenderManager-Release\install")
+
     Write-Host "Moving OSVR-Central contents up one dir"
     MoveUpOneDir("OSVR-Central\bin")
+
+    Write-Host "Moving 32 bit OSVR-Core contents up one dir"
+    MoveUpOneDir("OSVR-Core\x86\install")
+    Write-Host "Moving 64 bit OSVR-Core contents up one dir"
+    MoveUpOneDir("OSVR-Core\x64\install")
+    Write-Host "Moving OSVR-Core-Release contents up one dir"
+    MoveUpOneDir("OSVR-Core-Release\install")
+
+    Write-Host "Moving OSVR-Config contents up one dir"
+    MoveUpOneDir("OSVR-Config\artifacts")
+
     Write-Host "Removing extra files from OSVR-Central"
-    Move-OSVR-Central
+    Move-OSVR-Central "OSVR-Central"
+
     Write-Host "Removing extra files from OSVR Tracker Viewer"
-    Move-OSVR-Tracker-View
-    Write-Host "Removing extra files from RenderManager"
-    Move-RenderManager
+    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer"
+
+    if($buildType.compareTo("DEV") -eq 0){
+        Write-Host "Removing extra files from RenderManager-SDK"
+        Move-RenderManager-SDK "RenderManager\x86"
+        Move-RenderManager-SDK "RenderManager\x64"
+    }
+    Write-Host "Removing extra files from RenderManager-Release"
+    Move-RenderManager "RenderManager-Release"
 
     Write-Host "ci-build complete!"
 }
 
 function MoveUpOneDir([string]$dirPath){
-    $files = get-childitem -path . -filter $dirPath
+    $files = Get-Childitem -path . -filter $dirPath
         foreach ($file in $files) {
-            $subFiles = get-childitem -path $file.FullName
+            $subFiles = Get-Childitem -path $file.FullName
             foreach ($subFile in $subFiles) {
                 $tempName = $file.Parent.FullName + "\" + $subFile.Name + '-foo'
                 $newName = $file.Parent.FullName + "\" + $subFile.Name
@@ -45,25 +75,37 @@ function MoveUpOneDir([string]$dirPath){
                 #write-host "Old Location: " $subFile.FullName
                 #write-host "New Location:" $newName
 
-                write-host "Moving: " + $subFile
-                move-item -path $subFile.FullName -dest $tempName
-                move-item -path $tempName -dest $newName
+                Write-Host "Moving: " + $subFile
+                Move-Item -path $subFile.FullName -dest $tempName
+                Move-Item -path $tempName -dest $newName
             }
         }
-    write-host "Removing empty dir" : $file.FullName
-    remove-item -path $file.FullName
+    Write-Host "Removing empty dir" : $file.FullName
+    Remove-Item -path $file.FullName
 }
 
 function Move-OSVR-Core() {
-    # Extra files to remove OSVR Core
-    $OSVRFiles = 'NOTICE'
 
-    $serverDir = "OSVR-Server"
+    # Extra dirs and files to remove OSVR Core Release
+    $OSVRDirs = 'include',
+                'lib',
+                'share'
+    $OSVRFiles = 'add_sdk_to_registry.ps1',
+                 'add_sdk_to_registry.cmd'
+
+
+    Write-Host "Removing extra files from OSVR-Core-Release"
+    $serverDir = "OSVR-Core-Release"
     $OSVRPaths = $OSVRFiles| % {Join-Path $serverDir "$_"}
     Remove-Item $OSVRPaths
+
+    Write-Host "Removing extra dirs from OSVR-Core-Release"
+    $OSVRPaths = $OSVRDirs| % {Join-Path $serverDir "$_"}
+    Remove-Item -Path $OSVRPaths -Recurse -Force
 }
 
-function Move-OSVR-Tracker-View() {
+function Move-OSVR-Tracker-View([string]$trackViewDir) {
+
     # Extra files to remove OSVR Tracker Viewer
     $OSVRFiles = 'osvr-ver.txt',
         'osvrClientKit.dll',
@@ -81,8 +123,6 @@ function Move-OSVR-Tracker-View() {
     $LicenseReadme = 'README-components-and-licenses.txt'
     $NewLicenseReadme = 'Tracker-Viewer-components-and-licenses.txt'
 
-    $trackViewDir = "OSVR-Tracker-Viewer"
-
     $OSVRPaths = $OSVRFiles| % {Join-Path $trackViewDir "$_"}
     Remove-Item $OSVRPaths
 
@@ -92,47 +132,64 @@ function Move-OSVR-Tracker-View() {
     Remove-Item -Recurse -Path $trackViewDir -Include *.7z
 }
 
-function Move-RenderManager(){
+function Move-RenderManager([string]$RMDir){
+
+    # Extra files to remove OSVR RenderManager
+    $ExtraFiles = 'osvrClientKit.dll',
+        'osvrClient.dll',
+        'osvrUtil.dll',
+        'osvrCommon.dll',
+        'osvr-ver.txt',
+        'AdjustableRenderingDelayD3D.exe',
+        'AdjustableRenderingDelayOpenGL.exe',
+        'LatencyTestD3DExample.exe',
+        'RenderManagerD3DExample3D.exe',
+        'RenderManagerD3DHeadSpaceExample.exe',
+        'RenderManagerD3DPresentMakeDeviceExample3D.exe',
+        'RenderManagerD3DPresentSideBySideExample.exe',
+        'RenderManagerD3DTest2D.exe',
+        'RenderManagerOpenGLCoreExample.exe',
+        'RenderManagerOpenGLExample.exe',
+        'RenderManagerOpenGLHeadSpaceExample.exe',
+        'RenderManagerOpenGLPresentExample.exe',
+        'RenderManagerOpenGLPresentSideBySideExample.exe',
+        'SpinCubeD3D.exe',
+        'SpinCubeOpenGL.exe'
+
+    $ExtraDirs = 'include',
+                 'lib'
+
+    $binDir = "bin"
+    $RMPath = Join-Path $RMDir $binDir
+    $RMPaths = $ExtraFiles| % {Join-Path $RMPath "$_"}
+    Remove-Item $RMPaths
+
+    Write-Host "Removing extra dirs from RenderManager-Release"
+    $RMPaths = $ExtraDirs| % {Join-Path $RMDir "$_"}
+    Remove-Item -Path $RMPaths -Recurse -Force
+
+}
+
+function Move-RenderManager-SDK([string]$RMDir){
 
     # Extra files to remove OSVR RenderManager
     $OSVRFiles = 'osvrClientKit.dll',
         'osvrClient.dll',
         'osvrUtil.dll',
-        'osvrCommon.dll'
+        'osvrCommon.dll',
+        'osvrClientKitd.dll',
+        'osvrClientd.dll',
+        'osvrUtild.dll',
+        'osvrCommond.dll,
+        osvr-ver.txt'
 
-    $RMDir = "RenderManager"
     $binDir = "bin"
     $RMPath = Join-Path $RMDir $binDir
     $RMPaths = $OSVRFiles| % {Join-Path $RMPath "$_"}
     Remove-Item $RMPaths
-
-
-    if($buildType.compareTo("CLIENT") -eq 0)
-    {
-        Write-Host "Removing additional files from RenderManager for client build"
-        #Extra files to remove for client build
-        $RMFiles = 'AdjustableRenderingDelayD3D.exe',
-            'AdjustableRenderingDelayOpenGL.exe',
-            'DirectModeDebugging.exe',
-            'LatencyTestD3DExample.exe',
-            'RenderManagerD3DExample3D.exe',
-            'RenderManagerD3DHeadSpaceExample.exe',
-            'RenderManagerD3DPresentMakeDeviceExample3D.exe',
-            'RenderManagerD3DPresentSideBySideExample.exe',
-            'RenderManagerD3DTest2D.exe',
-            'RenderManagerOpenGLCoreExample.exe',
-            'RenderManagerOpenGLExample.exe',
-            'RenderManagerOpenGLHeadSpaceExample.exe',
-            'RenderManagerOpenGLPresentExample.exe',
-            'RenderManagerOpenGLPresentSideBySideExample.exe',
-            'SpinCubeD3D.exe',
-            'SpinCubeOpenGL.exe'
-        $RMPaths = $RMFiles| % {Join-Path $RMPath "$_"}
-        Remove-Item $RMPaths
-    }
 }
 
-function Move-OSVR-Central(){
+function Move-OSVR-Central([string]$centralDir){
     # Extra files to remove OSVR-Central
     $OSVRFiles = 'osvrClient.dll',
         'osvrClientKit.dll',
@@ -140,10 +197,12 @@ function Move-OSVR-Central(){
         'osvrPluginHost.dll',
         'osvrUtil.dll'
 
-    $centralDir = "OSVR-Central"
-
     $OSVRPaths = $OSVRFiles| % {Join-Path $centralDir "$_"}
     Remove-Item $OSVRPaths
+}
+
+function Rename-Dir([string]$oldName, [string]$newName){
+    Rename-Item -path $oldName -newName $newName
 }
 
 # call the entry point
