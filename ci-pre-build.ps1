@@ -31,6 +31,8 @@ function Main() {
     MoveUpOneDir("RenderManager\x86\install")
     Write-Host "Moving 64 bit RenderManager contents up one dir"
     MoveUpOneDir("RenderManager\x64\install")
+    Write-Host "Moving RenderManager-Release contents up one dir"
+    MoveUpOneDir("RenderManager-Release\install")
 
     Write-Host "Moving OSVR-Central contents up one dir"
     MoveUpOneDir("OSVR-Central\bin")
@@ -39,6 +41,8 @@ function Main() {
     MoveUpOneDir("OSVR-Core\x86\install")
     Write-Host "Moving 64 bit OSVR-Core contents up one dir"
     MoveUpOneDir("OSVR-Core\x64\install")
+    Write-Host "Moving OSVR-Core-Release contents up one dir"
+    MoveUpOneDir("OSVR-Core-Release\install")
 
     Write-Host "Moving OSVR-Config contents up one dir"
     MoveUpOneDir("OSVR-Config\artifacts")
@@ -57,9 +61,9 @@ function Main() {
 }
 
 function MoveUpOneDir([string]$dirPath){
-    $files = get-childitem -path . -filter $dirPath
+    $files = Get-Childitem -path . -filter $dirPath
         foreach ($file in $files) {
-            $subFiles = get-childitem -path $file.FullName
+            $subFiles = Get-Childitem -path $file.FullName
             foreach ($subFile in $subFiles) {
                 $tempName = $file.Parent.FullName + "\" + $subFile.Name + '-foo'
                 $newName = $file.Parent.FullName + "\" + $subFile.Name
@@ -67,22 +71,33 @@ function MoveUpOneDir([string]$dirPath){
                 #write-host "Old Location: " $subFile.FullName
                 #write-host "New Location:" $newName
 
-                write-host "Moving: " + $subFile
-                move-item -path $subFile.FullName -dest $tempName
-                move-item -path $tempName -dest $newName
+                Write-Host "Moving: " + $subFile
+                Move-Item -path $subFile.FullName -dest $tempName
+                Move-Item -path $tempName -dest $newName
             }
         }
-    write-host "Removing empty dir" : $file.FullName
-    remove-item -path $file.FullName
+    Write-Host "Removing empty dir" : $file.FullName
+    Remove-Item -path $file.FullName
 }
 
 function Move-OSVR-Core() {
-    # Extra files to remove OSVR Core
-    $OSVRFiles = 'NOTICE'
 
-    $serverDir = "OSVR-Server"
+    # Extra dirs and files to remove OSVR Core Release
+    $OSVRDirs = 'include',
+                'lib',
+                'share'
+    $OSVRFiles = 'add_sdk_to_registry.ps1',
+                 'add_sdk_to_registry.cmd'
+
+
+    Write-Host "Removing extra files from OSVR-Core-Release"
+    $serverDir = "OSVR-Core-Release"
     $OSVRPaths = $OSVRFiles| % {Join-Path $serverDir "$_"}
     Remove-Item $OSVRPaths
+
+    Write-Host "Removing extra dirs from OSVR-Core-Release"
+    $OSVRPaths = $OSVRDirs| % {Join-Path $serverDir "$_"}
+    Remove-Item -Path $OSVRPaths -Recurse -Force
 }
 
 function Move-OSVR-Tracker-View([string]$trackViewDir) {
@@ -118,7 +133,11 @@ function Move-RenderManager([string]$RMDir){
     $OSVRFiles = 'osvrClientKit.dll',
         'osvrClient.dll',
         'osvrUtil.dll',
-        'osvrCommon.dll'
+        'osvrCommon.dll',
+        'osvrClientKitd.dll',
+        'osvrClientd.dll',
+        'osvrUtild.dll',
+        'osvrCommond.dll'
 
     $binDir = "bin"
     $RMPath = Join-Path $RMDir $binDir
