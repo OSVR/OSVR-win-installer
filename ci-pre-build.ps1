@@ -19,47 +19,51 @@ $buildType = $env:TYPE
 # "Entry Point" function
 function Main() {
 
-    Write-Host "Renaming RenderManager folders"
-    Rename-Dir "RenderManager\BIT=32,label=windows" "x86"
-    Rename-Dir "RenderManager\BIT=64,label=windows" "x64"
-
-    Write-Host "Renaming OSVR-Core folders"
-    Rename-Dir "OSVR-Core\BIT=32" "x86"
-    Rename-Dir "OSVR-Core\BIT=64" "x64"
-
-    Write-Host "Moving 32 bit RenderManager contents up one dir"
-    MoveUpOneDir("RenderManager\x86\install")
-    Write-Host "Moving 64 bit RenderManager contents up one dir"
-    MoveUpOneDir("RenderManager\x64\install")
-    Write-Host "Moving RenderManager-Release contents up one dir"
-    MoveUpOneDir("RenderManager-Release\install")
-
-    Write-Host "Moving OSVR-Central contents up one dir"
-    MoveUpOneDir("OSVR-Central\bin")
-
-    Write-Host "Moving 32 bit OSVR-Core contents up one dir"
-    MoveUpOneDir("OSVR-Core\x86\install")
-    Write-Host "Moving 64 bit OSVR-Core contents up one dir"
-    MoveUpOneDir("OSVR-Core\x64\install")
-    Write-Host "Moving OSVR-Core-Release contents up one dir"
-    MoveUpOneDir("OSVR-Core-Release\install")
-
-    Write-Host "Moving OSVR-Config contents up one dir"
-    MoveUpOneDir("OSVR-Config\artifacts")
-
-    Write-Host "Removing extra files from OSVR-Central"
-    Move-OSVR-Central "OSVR-Central"
-
-    Write-Host "Removing extra files from OSVR Tracker Viewer"
-    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer"
-
     if($buildType.compareTo("DEV") -eq 0){
+
+        Write-Host "Renaming RenderManager folders"
+        Rename-Dir "RenderManager\BIT=32,label=windows" "x86"
+        Rename-Dir "RenderManager\BIT=64,label=windows" "x64"
+
+        Write-Host "Renaming OSVR-Core folders"
+        Rename-Dir "OSVR-Core\BIT=32" "x86"
+        Rename-Dir "OSVR-Core\BIT=64" "x64"
+
+        Write-Host "Moving 32 bit RenderManager contents up one dir"
+        MoveUpOneDir("RenderManager\x86\install")
+        Write-Host "Moving 64 bit RenderManager contents up one dir"
+        MoveUpOneDir("RenderManager\x64\install")
+
+        Write-Host "Moving 32 bit OSVR-Core contents up one dir"
+        MoveUpOneDir("OSVR-Core\x86\install")
+        Write-Host "Moving 64 bit OSVR-Core contents up one dir"
+        MoveUpOneDir("OSVR-Core\x64\install")
+
         Write-Host "Removing extra files from RenderManager-SDK"
         Move-RenderManager-SDK "RenderManager\x86"
         Move-RenderManager-SDK "RenderManager\x64"
     }
+
+    Write-Host "Moving OSVR-Central contents up one dir"
+    MoveUpOneDir("OSVR-Central\bin")
+    Write-Host "Removing extra files from OSVR-Central"
+    Move-OSVR-Central "OSVR-Central"
+
+    Write-Host "Moving RenderManager-Release contents up one dir"
+    MoveUpOneDir("RenderManager-Release\install")
     Write-Host "Removing extra files from RenderManager-Release"
     Move-RenderManager "RenderManager-Release"
+
+    Write-Host "Moving OSVR-Core-Release contents up one dir"
+    MoveUpOneDir("OSVR-Core-Release\install")
+    Write-Host "Removing extra files from OSVR-Core-Release"
+    Move-OSVR-Core "OSVR-Core-Release"
+
+    Write-Host "Moving OSVR-Config contents up one dir"
+    MoveUpOneDir("OSVR-Config\artifacts")
+
+    Write-Host "Removing extra files from OSVR Tracker Viewer"
+    Move-OSVR-Tracker-View "OSVR-Tracker-Viewer"
 
     Write-Host "ci-build complete!"
 }
@@ -84,7 +88,7 @@ function MoveUpOneDir([string]$dirPath){
     Remove-Item -path $file.FullName
 }
 
-function Move-OSVR-Core() {
+function Move-OSVR-Core([string]$OSVRDir) {
 
     # Extra dirs and files to remove OSVR Core Release
     $OSVRDirs = 'include',
@@ -95,12 +99,11 @@ function Move-OSVR-Core() {
 
 
     Write-Host "Removing extra files from OSVR-Core-Release"
-    $serverDir = "OSVR-Core-Release"
-    $OSVRPaths = $OSVRFiles| % {Join-Path $serverDir "$_"}
+    $OSVRPaths = $OSVRFiles| % {Join-Path $OSVRDir "$_"}
     Remove-Item $OSVRPaths
 
     Write-Host "Removing extra dirs from OSVR-Core-Release"
-    $OSVRPaths = $OSVRDirs| % {Join-Path $serverDir "$_"}
+    $OSVRPaths = $OSVRDirs| % {Join-Path $OSVRDir "$_"}
     Remove-Item -Path $OSVRPaths -Recurse -Force
 }
 
