@@ -1,4 +1,4 @@
 <Uninstaller>
-      <Executable>Uninstall.exe</Executable>
+      <Executable>OSVRServicesUninstall.exe</Executable>
       <Arguments>/S</Arguments>
 </Uninstaller>
