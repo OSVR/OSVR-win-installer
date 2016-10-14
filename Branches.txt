@@ -1,0 +1,10 @@
+- Branch master:
+	Here you can find the current development of this software,
+	this branch receives new codes and bug fixes and is the main
+	development branch. It is important to note, this branch can
+	be unstable, for production you shall use the branch stable.
+- Branch stable:
+	Here you can find stable code, we merge changes here after the
+	code committed into master gets mature and pass through tests
+	and validations. Here you might not find all latest updates
+	from master, however the code is mature and tested.
