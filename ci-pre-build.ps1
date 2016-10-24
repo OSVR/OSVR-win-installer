@@ -159,7 +159,8 @@ function Move-RenderManager([string]$RMDir){
         'SpinCubeOpenGL.exe'
 
     $ExtraDirs = 'include',
-                 'lib'
+                 'lib',
+                 'share'
 
     $binDir = "bin"
     $RMPath = Join-Path $RMDir $binDir
@@ -198,7 +199,10 @@ function Move-OSVR-Central([string]$centralDir){
         'osvrClientKit.dll',
         'osvrCommon.dll',
         'osvrPluginHost.dll',
-        'osvrUtil.dll'
+        'osvrUtil.dll',
+        'functionality.dll',
+        'msvcp120.dll',
+        'msvcr120.dll'
 
     $OSVRPaths = $OSVRFiles| % {Join-Path $centralDir "$_"}
     Remove-Item $OSVRPaths
